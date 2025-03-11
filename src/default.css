@@ -1,0 +1,10 @@
+@import "tailwindcss"; 
+/* src/default.css */
+@import "tailwindcss/preflight";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+::placeholder {
+  color: white;
+  opacity: 1; /* Đảm bảo độ trong suốt của màu */
+}
