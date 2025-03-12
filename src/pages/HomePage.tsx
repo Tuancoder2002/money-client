@@ -1,4 +1,5 @@
 import React from 'react';
+import HeaderForm from '../components/HeaderForm';
 
 
 const HomePage: React.FC = () => {
@@ -6,7 +7,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <h1>Home Page</h1>
+      <HeaderForm/>
     </div>
   );
 };

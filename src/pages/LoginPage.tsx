@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const response = await axios.post("http://localhost:3000/login", {
+      const response = await axios.post("http://localhost:3000/auth/login", {
         email,
         password,
       });
