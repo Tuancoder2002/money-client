@@ -1,21 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "../default.css";
 
 interface AuthFormProps {
-  onSubmit: (username: string, email: string, password: string) => void;
+  onSubmit: (
+    email: string,
+    name: string,
+    gender: boolean,
+    password: string
+  ) => void;
   buttonText: string;
 }
 
 const RegisterForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState(true);
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(username, email, password);
+    onSubmit(email, name, gender, password);
   };
 
   return (
@@ -33,16 +42,6 @@ const RegisterForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <input
-              onChange={(e) => setUsername(e.target.value)}
-              value={username}
-              type="text"
-              placeholder="Username"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <input
               onChange={(e) => setEmail(e.target.value)}
               value={email}
               type="email"
@@ -53,13 +52,39 @@ const RegisterForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
           </div>
           <div className="mb-4">
             <input
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              type="text"
+              placeholder="Name"
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
+            />
+          </div>
+          <div className="mb-4">
+            <select
+              value={gender ? "true" : "false"}
+              onChange={(e) => setGender(e.target.value === "true")}
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
+            >
+              <option value="true">Male</option>
+              <option value="false">Female</option>
+            </select>
+          </div>
+          <div className="mb-4 relative">
+            <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-2 text-white"
+            >
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </button>
           </div>
           <button
             type="submit"

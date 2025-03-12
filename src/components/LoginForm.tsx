@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../default.css";
 
 interface AuthFormProps {
@@ -11,6 +12,7 @@ interface AuthFormProps {
 const LoginForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,15 +43,22 @@ const LoginForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-2 text-white"
+            >
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </button>
           </div>
           <div className="flex items-center justify-between mb-6">
             <label className="flex items-center">
