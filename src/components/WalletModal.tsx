@@ -1,7 +1,7 @@
 // src/components/WalletModal.tsx
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store"; // Đảm bảo bạn đã import RootState
+import { RootState } from "../redux/store";
 import axios from "axios";
 
 interface WalletModalProps {
@@ -14,32 +14,34 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
     { id: number; name: string; balance: number }[]
   >([]);
   const [loading, setLoading] = useState(true);
-  const userId = useSelector((state: RootState) => state.auth.userId); // Lấy ID người dùng từ Redux
+
+  const userStore = useSelector((store: RootState) => store.auth);
+  console.log("userStore", userStore);
 
   useEffect(() => {
     const fetchWallets = async () => {
+      const userId = userStore.data?.id;
       if (userId) {
         try {
           const response = await axios.get(
             `http://localhost:3000/wallet/user/${userId}`
           );
-          setWallets(response.data); // Giả sử response.data là mảng các ví
+          setWallets(response.data);
         } catch (error) {
           console.error("Error fetching wallets:", error);
         } finally {
-          setLoading(false); // Đặt loading thành false sau khi hoàn thành
+          setLoading(false);
         }
       } else {
-        console.log("No userId found"); // Log nếu không có userId
-        setLoading(false); // Nếu userId không hợp lệ, cũng đặt loading thành false
+        console.log("No userId found");
+        setLoading(false);
       }
     };
-
     fetchWallets();
-  }, [userId, isOpen]); // Thêm isOpen vào dependency array để gọi lại khi modal mở
+  }, [userStore.data?.id]);
 
-  if (!isOpen) return null; // Nếu modal không mở, không hiển thị gì
-  if (loading) return <div>Loading...</div>; // Hiển thị loading khi đang gọi API
+  if (!isOpen) return null;
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-20">
@@ -55,13 +57,31 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
           Close
         </button>
         <h2 className="text-xl font-bold mb-4">Your Wallets</h2>
-        <ul>
-          {wallets.map((wallet) => (
-            <li key={wallet.id} className="mb-2">
-              {wallet.name} - Balance: {wallet.balance}
-            </li>
-          ))}
-        </ul>
+        {wallets.length === 0 ? (
+          <p>No wallets found.</p> 
+        ) : (
+          <ul>
+            {wallets.map((wallet) => (
+              <li key={wallet.id} className="mb-2 p-4 bg-gray-100 rounded shadow">
+                <div className="flex justify-between items-center">
+                  <span className="ml-2">{wallet.name} - Balance: {wallet.balance}</span>
+                  <div className="flex">
+                    <button 
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                      Use
+                    </button>
+                    <button 
+                      className="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
