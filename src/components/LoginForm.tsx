@@ -1,3 +1,4 @@
+// src/components/LoginForm.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -59,15 +60,6 @@ const LoginForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
             >
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </button>
-          </div>
-          <div className="flex items-center justify-between mb-6">
-            <label className="flex items-center">
-              <input type="checkbox" className="form-checkbox" />
-              <span className="ml-2 text-white">Remember me</span>
-            </label>
-            <a href="#" className="text-white hover:underline">
-              Forgot Password?
-            </a>
           </div>
           <button
             type="submit"

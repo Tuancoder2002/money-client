@@ -1,3 +1,4 @@
+// src/components/RegisterForm.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,8 +8,7 @@ import "../default.css";
 interface AuthFormProps {
   onSubmit: (
     email: string,
-    name: string,
-    gender: boolean,
+    username: string,
     password: string
   ) => void;
   buttonText: string;
@@ -16,15 +16,14 @@ interface AuthFormProps {
 
 const RegisterForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [gender, setGender] = useState(true);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(email, name, gender, password);
+    onSubmit(email, username, password); // Gọi onSubmit với email, username và password
   };
 
   return (
@@ -52,22 +51,13 @@ const RegisterForm: React.FC<AuthFormProps> = ({ onSubmit, buttonText }) => {
           </div>
           <div className="mb-4">
             <input
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              onChange={(e) => setUsername(e.target.value)} // Thay đổi từ setName thành setUsername
+              value={username} // Thay đổi từ name thành username
               type="text"
-              placeholder="Name"
+              placeholder="Username" // Thay đổi placeholder thành Username
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
+              required
             />
-          </div>
-          <div className="mb-4">
-            <select
-              value={gender ? "true" : "false"}
-              onChange={(e) => setGender(e.target.value === "true")}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white text-white"
-            >
-              <option value="true">Male</option>
-              <option value="false">Female</option>
-            </select>
           </div>
           <div className="mb-4 relative">
             <input

@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 export default function App() {
+  
   return (
     <Router>
       <Routes>

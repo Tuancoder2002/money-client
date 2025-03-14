@@ -1,3 +1,4 @@
+// src/pages/RegisterPage.tsx
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,15 +12,13 @@ const RegisterPage: React.FC = () => {
 
   const handleRegister = async (
     email: string,
-    name: string,
-    gender: boolean,
+    username: string, // Thay đổi từ name thành username
     password: string
   ) => {
     try {
       const response = await axios.post("http://localhost:3000/auth/register", {
         email,
-        name,
-        gender,
+        username, // Gửi username thay vì name
         password,
       });
 
