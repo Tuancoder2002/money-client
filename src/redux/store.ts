@@ -1,10 +1,13 @@
 // src/redux/store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer, { fetchUserFromToken } from "./authSlice"; // Import action thunk
+import authReducer, { fetchUserFromToken } from "./authSlice"; // Import action thunk\
+import walletReducer from "./walletSlice"
+
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    wallet: walletReducer,
   },
 });
 

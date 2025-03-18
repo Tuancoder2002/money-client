@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import WalletModal from "./WalletModal";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 const HeaderForm: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login")
+  }
 
   return (
     <header className="bg-white shadow-md fixed w-full top-0 z-10">
@@ -15,28 +24,16 @@ const HeaderForm: React.FC = () => {
             className="w-10 h-10 rounded-full cursor-pointer"
             onClick={() => setIsModalOpen(true)}
           />
+          <p className="ml-2">Balance - </p>
         </div>
         <nav className="flex items-center space-x-8 text-gray-800">
           <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-700 transition duration-200">
             Add Transaction
           </button>
-          <a href="#" className="hover:text-blue-600 flex items-center">
+          <button onClick={handleLogout} className="hover:text-blue-600 flex items-center">
             Log out
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-4 h-4 ml-1"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </a>
+            <FontAwesomeIcon className="ml-2" icon={faArrowRightFromBracket} />
+          </button>
         </nav>
       </div>
       <WalletModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

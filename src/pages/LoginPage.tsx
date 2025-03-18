@@ -1,11 +1,9 @@
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoginForm from "../components/LoginForm";
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
 
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -19,7 +17,8 @@ const LoginPage: React.FC = () => {
         const token = response.data.token; 
         localStorage.setItem("token", token);
        
-        navigate("/home");
+        // navigate("/home");
+        window.location.href = "/home"
       } else {
         alert("Failed to login");
       }

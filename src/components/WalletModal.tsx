@@ -11,12 +11,11 @@ interface WalletModalProps {
 
 const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
   const [wallets, setWallets] = useState<
-    { id: number; name: string; balance: number }[]
+    { id: number; name: string; balance: number; isSelected: boolean }[]
   >([]);
   const [loading, setLoading] = useState(true);
 
   const userStore = useSelector((store: RootState) => store.auth);
-  console.log("userStore", userStore);
 
   useEffect(() => {
     const fetchWallets = async () => {
@@ -26,19 +25,32 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
           const response = await axios.get(
             `http://localhost:3000/wallet/user/${userId}`
           );
-          setWallets(response.data);
+          const walletsWithSelection = response.data.map((wallet: any) => ({
+            ...wallet,
+            isSelected: false, // Thêm trạng thái isSelected
+          }));
+          setWallets(walletsWithSelection);
         } catch (error) {
           console.error("Error fetching wallets:", error);
         } finally {
           setLoading(false);
         }
       } else {
-        console.log("No userId found");
         setLoading(false);
       }
     };
     fetchWallets();
   }, [userStore.data?.id]);
+
+  const handleUseWallet = (id: number) => {
+    setWallets((prevWallets) =>
+      prevWallets.map((wallet) =>
+        wallet.id === id
+          ? { ...wallet, isSelected: !wallet.isSelected } // Chuyển đổi trạng thái isSelected
+          : { ...wallet, isSelected: false } // Đặt các ví khác thành không được chọn
+      )
+    );
+  };
 
   if (!isOpen) return null;
   if (loading) return <div>Loading...</div>;
@@ -58,24 +70,26 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
         </button>
         <h2 className="text-xl font-bold mb-4">Your Wallets</h2>
         {wallets.length === 0 ? (
-          <p>No wallets found.</p> 
+          <p>No wallets found.</p>
         ) : (
           <ul>
             {wallets.map((wallet) => (
-              <li key={wallet.id} className="mb-2 p-4 bg-gray-100 rounded shadow">
+              <li
+                key={wallet.id}
+                className={`mb-2 p-4 rounded shadow ${
+                  wallet.isSelected ? " bg-green-500 text-white" : "bg-gray-100"
+                }`}
+              >
                 <div className="flex justify-between items-center">
-                  <span className="ml-2">{wallet.name} - Balance: {wallet.balance}</span>
-                  <div className="flex">
-                    <button 
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                    >
-                      Use
-                    </button>
-                    <button 
-                      className="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
+                  <span>{wallet.name} - Balance: {wallet.balance}</span>
+                  <div>
+                  <button
+                    onClick={() => handleUseWallet(wallet.id)} // Gọi hàm khi nhấn vào "Use"
+                    className="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800"
+                  >
+                    {wallet.isSelected ? "Used" : "Use"}
+                  </button>
+                  <button className="ml-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" > Edit </button>
                   </div>
                 </div>
               </li>
