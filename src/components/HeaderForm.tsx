@@ -4,10 +4,16 @@ import WalletModal from "./WalletModal";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import TransactionModal from "./TransactionModal";
 
 const HeaderForm: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+
   const navigate = useNavigate();
+  const selectedWallet = useSelector((state: RootState) => state.wallet.selectedWallet); 
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -21,13 +27,14 @@ const HeaderForm: React.FC = () => {
           <img
             src={logo}
             alt="Logo"
-            className="w-10 h-10 rounded-full cursor-pointer"
-            onClick={() => setIsModalOpen(true)}
+            className="w-10 h-10 rounded-full cursor-pointer mr-2"
+            onClick={() => setIsWalletModalOpen(true)}
           />
-          <p className="ml-2">Balance - </p>
+          {selectedWallet ? `${selectedWallet.name} - ${selectedWallet.balance} đ` : "Chưa Chọn ví"}
         </div>
         <nav className="flex items-center space-x-8 text-gray-800">
-          <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-700 transition duration-200">
+          <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-700 transition duration-200"
+            onClick={() => setIsTransactionModalOpen(true)}>
             Add Transaction
           </button>
           <button onClick={handleLogout} className="hover:text-blue-600 flex items-center">
@@ -36,7 +43,8 @@ const HeaderForm: React.FC = () => {
           </button>
         </nav>
       </div>
-      <WalletModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <TransactionModal isOpen={isTransactionModalOpen} onClose={() => setIsTransactionModalOpen(false)} />
+      <WalletModal isOpen={isWalletModalOpen} onClose={() => setIsWalletModalOpen(false)} />
     </header>
   );
 };

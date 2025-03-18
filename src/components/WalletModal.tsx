@@ -1,7 +1,8 @@
 // src/components/WalletModal.tsx
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { setWallets, selectWallet } from "../redux/walletSlice";
 import axios from "axios";
 
 interface WalletModalProps {
@@ -10,12 +11,12 @@ interface WalletModalProps {
 }
 
 const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
-  const [wallets, setWallets] = useState<
-    { id: number; name: string; balance: number; isSelected: boolean }[]
-  >([]);
+  
   const [loading, setLoading] = useState(true);
-
+  const dispatch = useDispatch();
   const userStore = useSelector((store: RootState) => store.auth);
+  const wallets = useSelector((store: RootState) => store.wallet.wallets);
+  const [selectedWalletId, setSelectedWalletId] = useState<number | null>(null); // Thêm trạng thái để theo dõi ví đang chọn
 
   useEffect(() => {
     const fetchWallets = async () => {
@@ -25,11 +26,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
           const response = await axios.get(
             `http://localhost:3000/wallet/user/${userId}`
           );
-          const walletsWithSelection = response.data.map((wallet: any) => ({
-            ...wallet,
-            isSelected: false, // Thêm trạng thái isSelected
-          }));
-          setWallets(walletsWithSelection);
+          dispatch(setWallets(response.data)); // Lưu danh sách ví vào Redux
         } catch (error) {
           console.error("Error fetching wallets:", error);
         } finally {
@@ -42,14 +39,9 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
     fetchWallets();
   }, [userStore.data?.id]);
 
-  const handleUseWallet = (id: number) => {
-    setWallets((prevWallets) =>
-      prevWallets.map((wallet) =>
-        wallet.id === id
-          ? { ...wallet, isSelected: !wallet.isSelected } // Chuyển đổi trạng thái isSelected
-          : { ...wallet, isSelected: false } // Đặt các ví khác thành không được chọn
-      )
-    );
+  const handleUseWallet = (wallet: { id: number; name: string; balance: number }) => {
+    dispatch(selectWallet(wallet)); // Gọi action để chọn ví
+    setSelectedWalletId(wallet.id);
   };
 
   if (!isOpen) return null;
@@ -74,23 +66,15 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
         ) : (
           <ul>
             {wallets.map((wallet) => (
-              <li
-                key={wallet.id}
-                className={`mb-2 p-4 rounded shadow ${
-                  wallet.isSelected ? " bg-green-500 text-white" : "bg-gray-100"
-                }`}
-              >
+              <li key={wallet.id} className={`mb-2 p-4 rounded shadow ${selectedWalletId === wallet.id ? 'bg-green-200' : 'bg-gray-100'}`}>
                 <div className="flex justify-between items-center">
                   <span>{wallet.name} - Balance: {wallet.balance}</span>
-                  <div>
                   <button
-                    onClick={() => handleUseWallet(wallet.id)} // Gọi hàm khi nhấn vào "Use"
-                    className="bg-green-700 text-white px-2 py-1 rounded hover:bg-green-800"
+                    onClick={() => handleUseWallet(wallet)} 
+                    className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
                   >
-                    {wallet.isSelected ? "Used" : "Use"}
+                    Use
                   </button>
-                  <button className="ml-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" > Edit </button>
-                  </div>
                 </div>
               </li>
             ))}
