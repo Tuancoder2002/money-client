@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar, faNoteSticky, faSort } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -8,12 +11,11 @@ interface WalletModalProps {
 }
 
 const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
-  const dispatch = useDispatch();
   const walletsStore = useSelector((store: RootState) => store.wallet);
   const selectedWallet = useSelector((state: RootState) => state.wallet.selectedWallet);
 
   const [amount, setAmount] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
+  const [transactionType, setTransactionType] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
 
@@ -31,10 +33,20 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
     setAmount(formattedValue);
   };
 
-  const handleSave = () => {
-    // Handle save logic here
-    onClose();
-    console.log({ amount, category, note, date });
+  const handleSave = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/transaction/create", {
+        amount: parseFloat(amount.replace(/\./g, "")), // Loại bỏ dấu chấm và chuyển đổi thành số
+        transactionType,
+        description: note,
+        createdAt: date,
+        walletId: selectedWallet?.id,
+      });
+      console.log("Transaction created:", response);
+      onClose();
+    } catch (error: any) {
+      console.error("Error creating transaction:", error.response ? error.response.data : error.message);
+    }
   };
 
   if (!isOpen) return null;
@@ -45,17 +57,17 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
         onClick={onClose}
       ></div>
       <div
-        className="relative bg-white p-6 rounded shadow-lg w-1/3 z-30"
+        className="relative bg-white p-6 rounded-2xl shadow-lg w-1/3 z-30"
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={onClose} className="text-red-500 float-right">
           Close
         </button>
-        <h2 className="text-xl font-bold mb-4">Thêm Giao Dịch</h2>
+        <h2 className="text-xl font-bold mb-4">Add Transactions</h2>
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <div className="bg-gray-200 p-2 rounded-full">
-              <img src="wallet-icon.png" alt="Wallet Icon" className="w-6 h-6" />
+            <div className="bg-gray-200 p-2 rounded-full mr-4">
+              <img src="https://png.pngtree.com/png-vector/20240905/ourmid/pngtree-3d-cartoon-money-wallet-transparent-background-png-image_13760333.png" alt="Wallet Icon" className="w-10 h-10 rounded-full" />
             </div>
             {selectedWallet ? `${selectedWallet.name} - ${selectedWallet.balance} đ` : "Chưa Chọn ví"}
           </div>
@@ -71,35 +83,34 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex items-center space-x-2">
             <div className="bg-gray-200 p-2 rounded-full">
-              <img src="group-icon.png" alt="Group Icon" className="w-6 h-6" />
+              <FontAwesomeIcon icon={faSort} />
             </div>
             <select
               className="border-b border-gray-300 focus:outline-none focus:border-black w-full"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              value={transactionType}
+              onChange={(e) => setTransactionType(e.target.value)}
             >
               <option value="" disabled>Chọn loại</option>
-              <option value="food">Food</option>
-              <option value="transport">Transport</option>
-              <option value="entertainment">Entertainment</option>
-              {/* Add more options as needed */}
+              <option value="DEPOSIT">DEPOSIT</option>
+              <option value="WITHDRAW">WITHDRAW</option>
+              {/* Thêm các tùy chọn khác nếu cần */}
             </select>
           </div>
           <div className="flex items-center space-x-2">
             <div className="bg-gray-200 p-2 rounded-full">
-              <img src="note-icon.png" alt="Note Icon" className="w-6 h-6" />
+              <FontAwesomeIcon icon={faNoteSticky} />
             </div>
             <input
               type="text"
               className="border-b border-gray-300 focus:outline-none focus:border-black w-full"
-              placeholder="Ghi chú"
+              placeholder="Note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
             />
           </div>
           <div className="flex items-center space-x-2">
             <div className="bg-gray-200 p-2 rounded-full">
-              <img src="calendar-icon.png" alt="Calendar Icon" className="w-6 h-6" />
+              <FontAwesomeIcon icon={faCalendar} />
             </div>
             <input
               type="date"
@@ -110,10 +121,10 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex justify-end space-x-2">
             <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded">
-              Hủy
+              Close
             </button>
             <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Lưu
+              Save
             </button>
           </div>
         </div>

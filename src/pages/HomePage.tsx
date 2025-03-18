@@ -28,6 +28,7 @@ const HomePage: React.FC = () => {
     <div>
       <HeaderForm />
     </div>
+   
   );
 };
 
