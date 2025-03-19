@@ -3,6 +3,8 @@ import React, { useEffect } from "react";
 import HeaderForm from "../components/HeaderForm";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import Statistics from "../components/Statistics";
+// import LandingSection from "../components/LandingSection";
 
 const HomePage: React.FC = () => {
   const userStore = useSelector((store: RootState) => store.auth);
@@ -27,8 +29,9 @@ const HomePage: React.FC = () => {
   return (
     <div>
       <HeaderForm />
+      {/* <LandingSection /> */}
+      <Statistics />
     </div>
-   
   );
 };
 

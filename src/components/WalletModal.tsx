@@ -38,7 +38,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose, onOpenAddWal
     fetchWallets();
   }, [userStore.data?.id]);
 
-  const handleUseWallet = (wallet: { id: number; name: string; balance: number }) => {
+  const handleUseWallet = (wallet: { id: number; name: string; balance: number; userId: number }) => {
     dispatch(selectWallet(wallet));
     setSelectedWalletId(wallet.id);
   };
@@ -49,17 +49,17 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose, onOpenAddWal
   return (
     <div className="fixed inset-0 flex justify-center items-center z-20">
       <div
-        className="absolute inset-0 bg-gray-300 opacity-30"
+        className="absolute inset-0 bg-gray-900 opacity-50"
         onClick={onClose}
       ></div>
       <div
-        className="relative bg-white p-6 rounded shadow-lg w-1/3 z-30"
+        className="relative bg-white p-8 rounded-2xl shadow-lg w-1/3 z-30"
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={onClose} className="text-red-500 float-right">
           Close
         </button>
-        <h2 className="text-xl font-bold mb-4">Your Wallets</h2>
+        <h2 className="text-2xl font-bold mb-6 text-blue-600">Your Wallets</h2>
         {wallets.length === 0 ? (
           <p>No wallets found.</p>
         ) : (
@@ -67,7 +67,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose, onOpenAddWal
             {wallets.map((wallet) => (
               <li key={wallet.id} className={`mb-2 p-4 rounded shadow ${selectedWalletId === wallet.id ? 'bg-green-200' : 'bg-gray-100'}`}>
                 <div className="flex justify-between items-center">
-                  <span>{wallet.name} - Balance: {wallet.balance.toLocaleString()} đ</span>
+                  <span>{wallet.name} - Balance: {wallet.balance !== undefined ? wallet.balance.toLocaleString() : '0'} đ</span>
                   <button
                     onClick={() => handleUseWallet(wallet)} 
                     className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
@@ -79,7 +79,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose, onOpenAddWal
             ))}
           </ul>
         )}
-        <button onClick={onOpenAddWallet} className="bg-blue-300 text-white p-4 rounded hover:bg-blue-400">Add Wallet</button>
+        <button onClick={onOpenAddWallet} className="bg-blue-500 text-white p-4 rounded hover:bg-blue-600 transition duration-200">Add Wallet</button>
       </div>
     </div>
   );

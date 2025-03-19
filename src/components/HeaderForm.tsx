@@ -41,9 +41,9 @@ const HeaderForm: React.FC = () => {
   };
 
   return (
-    <header className="bg-white shadow-md fixed w-full top-0 z-10">
+    <header className="bg-gradient-to-r from-cyan-400 to-blue-500 shadow-md fixed w-full top-0 z-10">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="flex items-center text-blue-600 text-xl font-bold">
+        <div className="flex items-center text-white text-xl font-bold">
           <img
             src={logo}
             alt="Logo"
@@ -52,12 +52,12 @@ const HeaderForm: React.FC = () => {
           />
            {selectedWallet ? `${selectedWallet.name} - ${selectedWallet.balance.toLocaleString()} đ` : "Chưa Chọn ví"}
         </div>
-        <nav className="flex items-center space-x-8 text-gray-800">
-          <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-700 transition duration-200"
+        <nav className="flex items-center space-x-8 text-white">
+          <button className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-4 py-2 rounded-full hover:from-blue-600 hover:to-green-600 transition duration-200"
             onClick={handleOpenTransactionModal}>
             Add Transaction
           </button>
-          <button onClick={handleLogout} className="hover:text-blue-600 flex items-center">
+          <button onClick={handleLogout} className="hover:text-gray-200 flex items-center">
             Log out
             <FontAwesomeIcon className="ml-2" icon={faArrowRightFromBracket} />
           </button>
