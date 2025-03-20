@@ -2,12 +2,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer, { fetchUserFromToken } from "./authSlice"; // Import action thunk\
 import walletReducer from "./walletSlice"
-
+import categoryReducer from "./categorySlice"
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     wallet: walletReducer,
+    category: categoryReducer,
   },
 });
 

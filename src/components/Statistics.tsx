@@ -1,15 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Statistics: React.FC = () => {
-  const totalWithdraw = 4687000;
-  const dailyAverage = 246684.21;
-  const categories = [
+  const walletId = useSelector((state: RootState) => state.wallet.selectedWallet?.id);
+  const [totalExpenses, setTotalExpenses] = useState<number>(0);
+  const [dailyAverage, setDailyAverage] = useState<number>(0);
+  const [categories, setCategories] = useState<any[]>([
     { name: "Hóa đơn & Tiện ích", amount: 2500000, percentage: 54, icon: "https://png.pngtree.com/png-vector/20220825/ourmid/pngtree-paying-bills-rgb-color-icon-gas-literacy-art-vector-png-image_38871094.png" },
     { name: "Ăn uống", amount: 1737000, percentage: 37, icon: "https://png.pngtree.com/png-clipart/20240131/original/pngtree-iconbuttonpictogram--eateryrestaurant--dining-photo-png-image_14199886.png" },
     { name: "Mua sắm", amount: 250000, percentage: 5, icon: "https://cdn.pixabay.com/photo/2017/03/29/04/09/shopping-icon-2184065_1280.png" },
     { name: "Di chuyển", amount: 200000, percentage: 4, icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Circle-icons-plane.svg/768px-Circle-icons-plane.svg.png" },
-  ];
+  ]);
+
+  console.log("walletId", walletId);
+  useEffect(() => {
+    const fetchData = async () => {
+      
+      try {
+        // Gọi API để lấy tổng số tiền rút
+        const totalResponse = await axios.get(`http://localhost:3000/transaction/total-expenses/current-month/${walletId}`);
+        console.log(totalResponse);
+        const totalExpenses = totalResponse.data.totalExpenses || 0;
+        setTotalExpenses(totalExpenses);
+
+        // Tính toán trung bình hàng ngày
+        const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+        setDailyAverage(totalExpenses / daysInMonth);
+      } catch (error) {
+        console.error("Error fetching statistics data:", error);
+      }
+    };
+
+    fetchData();
+  }, [walletId]);
 
   const chartData = {
     series: categories.map(category => category.amount),
@@ -43,7 +69,7 @@ const Statistics: React.FC = () => {
         <div className="flex justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-300">Tổng cộng</h3>
-            <p className="text-red-400 text-2xl font-bold">{totalWithdraw.toLocaleString()} đ</p>
+            <p className="text-red-400 text-2xl font-bold">{totalExpenses.toLocaleString()} đ</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-300">Trung bình hàng ngày</h3>
