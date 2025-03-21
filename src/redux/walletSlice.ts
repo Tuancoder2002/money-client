@@ -10,11 +10,13 @@ interface Wallet {
 interface WalletState {
   wallets: Wallet[];
   selectedWallet: Wallet | null;
+  refresh: number;
 }
 
 const initialState: WalletState = {
   wallets: [],
   selectedWallet: null,
+  refresh: 0,
 };
 
 const walletSlice = createSlice({
@@ -33,8 +35,12 @@ const walletSlice = createSlice({
     addWallet(state, action: PayloadAction<Wallet>) {
       state.wallets.push(action.payload);
     },
+    refreshHld: (state) => {
+      state.refresh++;
+    },
   },
 });
 
-export const { setWallets, selectWallet, clearWallet, addWallet } = walletSlice.actions;
+export const { setWallets, selectWallet, clearWallet, addWallet, refreshHld } =
+  walletSlice.actions;
 export default walletSlice.reducer;

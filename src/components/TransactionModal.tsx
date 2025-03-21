@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { setWallets, selectWallet } from "../redux/walletSlice";
+import { setWallets, selectWallet, refreshHld } from "../redux/walletSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
@@ -54,6 +54,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
         }
       );
       console.log(transactionRes);
+      dispatch(refreshHld())
 
       // Gọi lại API để lấy dữ liệu ví mới
       const response = await axios.get(
