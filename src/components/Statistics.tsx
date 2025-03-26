@@ -3,7 +3,8 @@ import ReactApexChart from "react-apexcharts";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-
+import HeathImg from "../assets/Health.png";
+import API_BASE_URL from "../config/apiConfig";
 const Statistics: React.FC = () => {
   const walletId = useSelector(
     (state: RootState) => state.wallet.selectedWallet?.id
@@ -22,14 +23,14 @@ const Statistics: React.FC = () => {
       try {
         // Gọi API để lấy tổng số tiền rút
         const totalResponse = await axios.get(
-          `http://localhost:3000/transaction/total-expenses/current-month/${walletId}`
+          `${API_BASE_URL}/transaction/total-expenses/current-month/${walletId}`
         );
         const totalExpenses = totalResponse.data.totalExpenses || 0;
         setTotalExpenses(totalExpenses);
 
         // Gọi API để lấy danh sách các danh mục
         const categoriesResponse = await axios.get(
-          `http://localhost:3000/transaction/with-category-type/current-month/${walletId}`
+          `${API_BASE_URL}/transaction/with-category-type/current-month/${walletId}`
         );
         const categoriesData = categoriesResponse.data;
 
@@ -47,9 +48,41 @@ const Statistics: React.FC = () => {
               } else if (category.name === "Shopping") {
                 icon =
                   "https://cdn.pixabay.com/photo/2017/03/29/04/09/shopping-icon-2184065_1280.png";
-              } else if (category.name === "Move") {
+              } else if (category.name === "Transport") {
                 icon =
                   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Circle-icons-plane.svg/768px-Circle-icons-plane.svg.png";
+              } else if (category.name === "Health") {
+                icon = HeathImg
+                  
+              } else if (category.name === "Entertainment") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/6961/6961991.png";
+              } else if (category.name === "Utilities") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/2913/2913465.png";
+              } else if (category.name === "Education") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/3135/3135755.png";
+              } else if (category.name === "Travel") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/2991/2991108.png";
+              } else if (category.name === "Dining Out") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/1046/1046784.png";
+              } else if (category.name === "Salary") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+              } else if (category.name === "Bonus") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
+              } else if (category.name === "Freelance") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/3063/3063826.png";
+              } else if (category.name === "Investments") {
+                icon =
+                  "https://cdn-icons-png.flaticon.com/512/2331/2331970.png";
+              } else {
+                icon = "https://via.placeholder.com/24";
               }
               acc[category.name] = {
                 name: category.name,

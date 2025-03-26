@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { setCategories } from "../redux/categorySlice"; // Import action từ categorySlice
 import { RootState } from "../redux/store"; // Import RootState
+import API_BASE_URL from "../config/apiConfig";
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -17,7 +18,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/category");
+        const response = await axios.get(`${API_BASE_URL}/category`);
         dispatch(setCategories(response.data)); // Lưu dữ liệu vào Redux store
       } catch (error) {
         console.error("Error fetching categories:", error);

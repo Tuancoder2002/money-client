@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setWallets } from "../redux/walletSlice";
+import API_BASE_URL from "../config/apiConfig"; 
 
 interface AddWalletModalProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({ isOpen, onClose }) => {
     }
 
     try {
-      await axios.post("http://localhost:3000/wallet/create", {
+      await axios.post(`${API_BASE_URL}/wallet/create`, {
         userId, // Thêm userId vào yêu cầu POST
         name,
         balance: parseFloat(balance.replace(/\./g, "")) || 0, // Loại bỏ dấu chấm và chuyển đổi thành số, mặc định là 0 nếu không hợp lệ
@@ -30,7 +31,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({ isOpen, onClose }) => {
       console.log("Wallet created successfully!");
 
       // Gọi lại API để lấy dữ liệu ví mới
-      const response = await axios.get(`http://localhost:3000/wallet/user/${userId}`);
+      const response = await axios.get(`${API_BASE_URL}/wallet/user/${userId}`);
       dispatch(setWallets(response.data)); // Dispatch action để cập nhật danh sách ví trong Redux store
       onClose();
     } catch (error: any) {

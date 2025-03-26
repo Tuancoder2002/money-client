@@ -9,6 +9,7 @@ import {
   faSort,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import API_BASE_URL from "../config/apiConfig";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -44,7 +45,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
     console.log("selectedCategory", selectedCategory);
     try {
       const transactionRes = await axios.post(
-        "http://localhost:3000/transaction/create",
+        `${API_BASE_URL}/transaction/create`,
         {
           amount: parseFloat(amount.replace(/\./g, "")), // Loại bỏ dấu chấm và chuyển đổi thành số
           description: note,
@@ -58,7 +59,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
 
       // Gọi lại API để lấy dữ liệu ví mới
       const response = await axios.get(
-        `http://localhost:3000/wallet/user/${selectedWallet?.userId}`
+        `${API_BASE_URL}/wallet/user/${selectedWallet?.userId}`
       );
       dispatch(setWallets(response.data)); // Dispatch action để cập nhật danh sách ví trong Redux store
 

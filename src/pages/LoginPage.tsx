@@ -2,12 +2,13 @@
 import React from "react";
 import axios from "axios";
 import LoginForm from "../components/LoginForm";
+import API_BASE_URL from "../config/apiConfig";
 
 const LoginPage: React.FC = () => {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const response = await axios.post("http://localhost:3000/auth/login", {
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         email,
         password,
       });

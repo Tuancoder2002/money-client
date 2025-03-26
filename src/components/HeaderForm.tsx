@@ -4,7 +4,7 @@ import WalletModal from "./WalletModal";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import TransactionModal from "./TransactionModal";
 import AddWalletModal from "./AddWalletModal";
@@ -15,6 +15,7 @@ const HeaderForm: React.FC = () => {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [isAddWalletModalOpen, setIsAddWalletModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false); // State for CategoryModal
+
 
   const navigate = useNavigate();
   const selectedWallet = useSelector((state: RootState) => state.wallet.selectedWallet); 

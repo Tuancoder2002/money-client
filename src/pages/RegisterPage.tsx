@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { register } from "../redux/authSlice";
 import RegisterForm from "../components/RegisterForm";
+import API_BASE_URL from "../config/apiConfig";
 
 const RegisterPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const RegisterPage: React.FC = () => {
     password: string
   ) => {
     try {
-      const response = await axios.post("http://localhost:3000/auth/register", {
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
         email,
         username, // Gửi username thay vì name
         password,

@@ -1,6 +1,7 @@
 // src/redux/authSlice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import API_BASE_URL from "../config/apiConfig";
 
 interface User {
   id: number;
@@ -61,7 +62,7 @@ export const fetchUserFromToken = createAsyncThunk(
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const userResponse = await axios.get("http://localhost:3000/user/me", {
+        const userResponse = await axios.get(`${API_BASE_URL}/user/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

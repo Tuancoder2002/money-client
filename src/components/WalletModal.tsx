@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setWallets, selectWallet } from "../redux/walletSlice";
 import axios from "axios";
+import API_BASE_URL from "../config/apiConfig";
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ const WalletModal: React.FC<WalletModalProps> = ({ isOpen, onClose, onOpenAddWal
       if (userId) {
         try {
           const response = await axios.get(
-            `http://localhost:3000/wallet/user/${userId}`
+            `${API_BASE_URL}/wallet/user/${userId}`
           );
           dispatch(setWallets(response.data));
         } catch (error) {
