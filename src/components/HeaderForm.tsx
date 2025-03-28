@@ -52,10 +52,9 @@ const HeaderForm: React.FC = () => {
     setIsTransactionModalOpen(false);
     setIsAddWalletModalOpen(false);
   };
-
   return (
-    <header className="bg-gradient-to-r from-cyan-400 to-blue-500 shadow-md fixed w-full top-0 z-10">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header className="bg-gradient-to-r from-cyan-400 to-blue-500 shadow-md fixed w-full top-0 z-10 h-25">
+      <div className="container mx-auto px-4 py-7 flex justify-between items-center">
         <div className="flex items-center text-white text-xl font-bold">
           <img
             src={logo}
@@ -63,7 +62,7 @@ const HeaderForm: React.FC = () => {
             className="w-10 h-10 rounded-full cursor-pointer mr-2"
             onClick={handleOpenWalletModal}
           />
-           {selectedWallet ? `${selectedWallet.name} - ${selectedWallet.balance.toLocaleString()} đ` : "No Wallet"}
+           {selectedWallet ? `${selectedWallet.name} | ${selectedWallet.balance.toLocaleString()} đ` : "No Wallet"}
         </div>
         <nav className="flex items-center space-x-8 text-white">
           <button className="bg-gradient-to-r text-white px-4 py-2 rounded-full border hover:from-neutral-300 hover:to-neutral-500 transition duration-200"

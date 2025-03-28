@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Select from "react-select"; // Import react-select
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setWallets, selectWallet, refreshHld } from "../redux/walletSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendar,
-  faNoteSticky,
-  faSort,
-} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import API_BASE_URL from "../config/apiConfig";
+import { setCategories } from "../redux/categorySlice";
+import {
+  FaMoneyBillWave,
+  FaClipboard,
+  FaCalendarAlt,
+  FaTimes,
+} from "react-icons/fa"; // Import các icon từ Font Awesome
+import { toast } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import CSS của react-toastify
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -41,28 +45,55 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
     setAmount(formattedValue);
   };
 
-  const handleSave = async () => {
-    console.log("selectedCategory", selectedCategory);
-    try {
-      const transactionRes = await axios.post(
-        `${API_BASE_URL}/transaction/create`,
-        {
-          amount: parseFloat(amount.replace(/\./g, "")), // Loại bỏ dấu chấm và chuyển đổi thành số
-          description: note,
-          createdAt: date,
-          walletId: selectedWallet?.id,
-          categoryId: +selectedCategory,
-        }
-      );
-      console.log(transactionRes);
-      dispatch(refreshHld())
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/category`);
+        dispatch(setCategories(response.data)); // Lưu dữ liệu vào Redux store
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
 
+    fetchCategories(); // Gọi hàm async
+  }, [dispatch]);
+
+  const handleSave = async () => {
+    const formattedDate = new Date(date).toISOString(); 
+  
+    try {
+      if (!amount) {
+        toast.error("Số tiền không hợp lệ. Vui lòng nhập số tiền hợp lệ.");
+        return;
+      }
+      if (!selectedCategory) {
+        toast.error("Vui lòng chọn danh mục.");
+        return;
+      }
+      if (!selectedWallet) {
+        toast.error("Vui lòng chọn ví.");
+        return;
+      }
+
+      await axios.post(`${API_BASE_URL}/transaction/create`, {  
+        amount: parseFloat(amount.replace(/\./g, "")), // Loại bỏ dấu chấm và chuyển đổi thành số
+        description: note,
+        createdAt: formattedDate, // Sử dụng formattedDate với định dạng đầy đủ
+        walletId: selectedWallet?.id,
+        categoryId: +selectedCategory,
+      });
+  
+      // Hiển thị thông báo thành công
+      toast.success("Giao dịch đã được thêm thành công!");
+  
+      dispatch(refreshHld());
+  
       // Gọi lại API để lấy dữ liệu ví mới
       const response = await axios.get(
         `${API_BASE_URL}/wallet/user/${selectedWallet?.userId}`
       );
       dispatch(setWallets(response.data)); // Dispatch action để cập nhật danh sách ví trong Redux store
-
+  
       // Cập nhật ví được chọn
       const updatedWallet = response.data.find(
         (wallet: any) => wallet.id === selectedWallet?.id
@@ -70,17 +101,60 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
       if (updatedWallet) {
         dispatch(selectWallet(updatedWallet));
       }
-
-      onClose();
+  
+      onClose(); // Đóng modal
     } catch (error: any) {
       console.error(
         "Error creating transaction:",
         error.response ? error.response.data : error.message
       );
+  
+      // Hiển thị thông báo lỗi
+      toast.error("Đã xảy ra lỗi khi thêm giao dịch!");
     }
   };
 
   if (!isOpen) return null;
+
+  // Tùy chỉnh giao diện cho react-select
+  const customStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      width: "100%",
+      minWidth: "345px",
+      border: "1px solid #e5e7eb",
+      borderRadius: "8px",
+      padding: "4px",
+      boxShadow: "none",
+      "&:hover": {
+        borderColor: "#1E3A8A", // Màu xanh đậm
+      },
+    }),
+    option: (provided: any, state: any) => ({
+      ...provided,
+      display: "flex",
+      alignItems: "center",
+      padding: "10px",
+      backgroundColor: state.isFocused ? "#E0E7FF" : "white", // Màu xanh nhạt khi hover
+      color: "#1E3A8A", // Màu xanh đậm
+    }),
+  };
+
+  // Chuyển đổi dữ liệu categories thành định dạng react-select
+  const categoryOptions = categories.map((category) => ({
+    value: category.id,
+    label: (
+      <div className="flex items-center">
+        <img
+          src={category.icon}
+          alt={category.name}
+          className="w-6 h-6 mr-2 rounded-full"
+        />
+        {category.name}
+      </div>
+    ),
+  }));
+
   return (
     <div className="fixed inset-0 flex justify-center items-center z-20">
       <div
@@ -88,92 +162,103 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
         onClick={onClose}
       ></div>
       <div
-        className="relative bg-gradient-to-r from-cyan-400 to-blue-500 p-8 rounded-2xl shadow-lg w-1/3 z-30"
+        className="relative bg-white p-8 rounded-lg shadow-lg w-full max-w-lg z-30"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} className="text-red-500 float-right">
-          Close
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition duration-200"
+        >
+          <FaTimes className="w-5 h-5" /> {/* Icon đóng */}
         </button>
-        <h2 className="text-2xl font-bold mb-6 text-blue-600">
-          Add Transactions
+
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-center text-blue-900 mb-6">
+          Thêm giao dịch
         </h2>
-        <div className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gray-200 p-2 rounded-full mr-4">
-              <img
-                src="https://png.pngtree.com/png-vector/20240905/ourmid/pngtree-3d-cartoon-money-wallet-transparent-background-png-image_13760333.png"
-                alt="Wallet Icon"
-                className="w-10 h-10 rounded-full"
+
+        <div className="space-y-4">
+          {/* Amount */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Số tiền
+            </label>
+            <div className="relative">
+              <FaMoneyBillWave className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg px-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900"
+                placeholder="Nhập số tiền"
+                value={amount}
+                onChange={handleAmountChange}
               />
             </div>
-            {selectedWallet
-              ? `${selectedWallet.name} - ${selectedWallet.balance} đ`
-              : "Chưa Chọn ví"}
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-700">VND</span>
-            <input
-              type="text"
-              className="border-b border-gray-300 focus:outline-none focus:border-blue-500 w-full"
-              placeholder="0"
-              value={amount}
-              onChange={handleAmountChange}
+
+          {/* Category */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Danh mục
+            </label>
+            <Select
+              options={categoryOptions}
+              styles={customStyles}
+              onChange={(selectedOption: any) =>
+                setSelectedCategory(selectedOption.value)
+              }
             />
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="bg-gray-200 p-2 rounded-full">
-              <FontAwesomeIcon icon={faSort} />
+
+          {/* Note */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Ghi chú
+            </label>
+            <div className="relative">
+              <FaClipboard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg px-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900"
+                placeholder="Nhập ghi chú"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
             </div>
-            <select
-              className="border-b border-gray-300 focus:outline-none focus:border-blue-500 w-full"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <option value="" disabled>
-                Chọn danh mục
-              </option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="bg-gray-200 p-2 rounded-full">
-              <FontAwesomeIcon icon={faNoteSticky} />
+
+          {/* Date */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Ngày
+            </label>
+            <div className="relative">
+              <FaCalendarAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="date"
+                className="w-full border border-gray-300 rounded-lg px-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:border-blue-900"
+                value={date}
+                onChange={(e) => {
+      
+                  setDate(e.target.value);
+                }}
+              />
             </div>
-            <input
-              type="text"
-              className="border-b border-gray-300 focus:outline-none focus:border-blue-500 w-full"
-              placeholder="Note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="bg-gray-200 p-2 rounded-full">
-              <FontAwesomeIcon icon={faCalendar} />
-            </div>
-            <input
-              type="date"
-              className="border-b border-gray-300 focus:outline-none focus:border-blue-500 w-full"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
+
+          {/* Action Buttons */}
           <div className="flex justify-end space-x-4">
             <button
               onClick={onClose}
-              className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition duration-200"
+              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center"
             >
-              Close
+              <FaTimes className="mr-2 w-4 h-4" /> Đóng
             </button>
             <button
               onClick={handleSave}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+              className="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition duration-200 flex items-center"
             >
-              Save
+              Lưu
             </button>
           </div>
         </div>

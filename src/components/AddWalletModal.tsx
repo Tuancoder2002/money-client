@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { FaWallet, FaMoneyBillWave, FaTimes } from "react-icons/fa"; // Import các icon từ Font Awesome
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { setWallets } from "../redux/walletSlice";
-import API_BASE_URL from "../config/apiConfig"; 
+import API_BASE_URL from "../config/apiConfig";
+import { toast } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import CSS của react-toastify
 
 interface AddWalletModalProps {
   isOpen: boolean;
@@ -19,6 +22,7 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({ isOpen, onClose }) => {
   const handleSave = async () => {
     if (!userId) {
       console.error("User ID is missing");
+      toast.error("Không tìm thấy thông tin người dùng!"); // Thông báo lỗi
       return;
     }
 
@@ -28,14 +32,24 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({ isOpen, onClose }) => {
         name,
         balance: parseFloat(balance.replace(/\./g, "")) || 0, // Loại bỏ dấu chấm và chuyển đổi thành số, mặc định là 0 nếu không hợp lệ
       });
-      console.log("Wallet created successfully!");
+
+      // Hiển thị thông báo thành công
+      toast.success("Ví đã được thêm thành công!");
 
       // Gọi lại API để lấy dữ liệu ví mới
       const response = await axios.get(`${API_BASE_URL}/wallet/user/${userId}`);
       dispatch(setWallets(response.data)); // Dispatch action để cập nhật danh sách ví trong Redux store
+
+      // Đóng modal
       onClose();
     } catch (error: any) {
-      console.error("Error creating wallet:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error creating wallet:",
+        error.response ? error.response.data : error.message
+      );
+
+      // Hiển thị thông báo lỗi
+      toast.error("Đã xảy ra lỗi khi thêm ví!");
     }
   };
 
@@ -43,47 +57,87 @@ const AddWalletModal: React.FC<AddWalletModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-20">
+      {/* Overlay */}
       <div
         className="absolute inset-0 bg-gray-900 opacity-50"
         onClick={onClose}
       ></div>
+
+      {/* Modal Content */}
       <div
-        className="relative bg-white p-8 rounded-2xl shadow-lg w-1/3 z-30"
+        className="relative bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-30"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} className="text-red-500 float-right">
-          Close
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition duration-200"
+        >
+          <FaTimes className="w-5 h-5" /> {/* Icon đóng */}
         </button>
-        <h2 className="text-2xl font-bold mb-6 text-blue-600">Add New Wallet</h2>
-        <div className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-700">Name</span>
-            <input
-              type="text"
-              className="border-b border-gray-300 focus:outline-none focus:border-blue-500 w-full"
-              placeholder="Wallet Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+
+        {/* Title */}
+        <h2 className="text-xl font-semibold text-[#1E3A8A] mb-6 text-center">
+          Thêm ví mới
+        </h2>
+
+        {/* Form */}
+        <div className="space-y-4">
+          {/* Wallet Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tên ví
+            </label>
+            <div className="relative">
+              <FaWallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg px-10 py-2 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A]"
+                placeholder="Nhập tên ví"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-700">Balance</span>
-            <input
-              type="text"
-              className="border-b border-gray-300 focus:outline-none focus:border-blue-500 w-full"
-              placeholder="0"
-              value={balance}
-              onChange={(e) => setBalance(e.target.value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, "."))}
-            />
+
+          {/* Wallet Balance */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Số dư ban đầu
+            </label>
+            <div className="relative">
+              <FaMoneyBillWave className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-lg px-10 py-2 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A]"
+                placeholder="0"
+                value={balance}
+                onChange={(e) =>
+                  setBalance(
+                    e.target.value
+                      .replace(/\D/g, "")
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                  )
+                }
+              />
+            </div>
           </div>
-          <div className="flex justify-end space-x-4">
-            <button onClick={onClose} className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition duration-200">
-              Close
-            </button>
-            <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
-              Save
-            </button>
-          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end mt-6 space-x-4">
+          <button
+            onClick={onClose}
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition duration-200 flex items-center"
+          >
+            <FaTimes className="mr-2 w-4 h-4" /> Đóng {/* Icon đóng */}
+          </button>
+          <button
+            onClick={handleSave}
+            className="bg-[#1E3A8A] text-white px-4 py-2 rounded-lg hover:bg-[#162E6F] transition duration-200 flex items-center"
+          >
+            <FaWallet className="mr-2 w-4 h-4" /> Lưu {/* Icon ví */}
+          </button>
         </div>
       </div>
     </div>

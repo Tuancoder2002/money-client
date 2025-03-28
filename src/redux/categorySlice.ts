@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
+  icon: string; // Thêm thuộc tính icon
 }
 
 interface CategoryState {
@@ -23,5 +24,7 @@ const categorySlice = createSlice({
   },
 });
 
+
 export const { setCategories } = categorySlice.actions;
+
 export default categorySlice.reducer;
