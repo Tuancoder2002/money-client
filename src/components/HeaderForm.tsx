@@ -53,8 +53,8 @@ const HeaderForm: React.FC = () => {
     setIsAddWalletModalOpen(false);
   };
   return (
-    <header className="bg-gradient-to-r from-cyan-400 to-blue-500 shadow-md fixed w-full top-0 z-10 h-25">
-      <div className="container mx-auto px-4 py-7 flex justify-between items-center">
+    <header className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-md fixed w-full top-0 z-10 h-20">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center text-white text-xl font-bold">
           <img
             src={logo}

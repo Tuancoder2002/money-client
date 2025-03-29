@@ -5,7 +5,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import API_BASE_URL from "../config/apiConfig";
 import HistoryTransaction from "./HistoryTransaction";
-import WalletModal from "./WalletModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFrown } from "@fortawesome/free-solid-svg-icons";
 
 const Statistics: React.FC = () => {
   const walletId = useSelector(
@@ -16,7 +17,6 @@ const Statistics: React.FC = () => {
   const [dailyAverage, setDailyAverage] = useState<number>(0);
   const [categories, setCategories] = useState<any[]>([]);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false); // State để điều khiển modal
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,88 +121,80 @@ const Statistics: React.FC = () => {
           </h2>
           {/* Vùng nét đứt bao quanh nút */}
           <div className="flex items-center justify-center w-[500px] h-[250px] border-2 border-dashed border-gray-300 rounded-lg">
-            <button
-              onClick={() => setIsWalletModalOpen(true)}
-              className="flex items-center justify-center w-16 h-16 bg-white text-indigo-500 rounded-full shadow-lg hover:bg-indigo-100 transition duration-300"
+            <button       
+              className="flex items-center justify-center w-40 h-40 bg-white text-indigo-500 rounded-full shadow-lg hover:bg-indigo-100 transition duration-300"
             >
-              <span className="text-4xl font-bold">+</span>
+              <FontAwesomeIcon icon={faFrown} className="text-8xl" />
             </button>
           </div>
           <p className="text-lg text-gray-300 mt-4">
-            Nhấn vào nút để thêm hoặc chọn ví.
+            Hãy nhấp vào logo trên cùng để thêm ví
           </p>
         </div>
       ) : (
         // Hiển thị thống kê khi đã chọn ví
-        <div className="p-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl w-full max-w-4xl">
-          <div className="flex justify-between mb-8">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-400">Tổng cộng</h3>
-              <p className="text-red-400 text-3xl font-extrabold">
-                {totalExpenses.toLocaleString()} đ
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-400">
-                Trung bình hàng ngày
-              </h3>
-              <p className="text-blue-400 text-3xl font-extrabold">
-                {dailyAverage.toLocaleString()} đ
-              </p>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <ReactApexChart
-              options={chartData.options}
-              series={chartData.series}
-              type="donut"
-              width={400}
-            />
-          </div>
-          <div className="mt-8">
-            {categories.slice(0, 3).map((category, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center border-b border-gray-700 pb-4 mb-4"
-              >
-                <div className="flex items-center">
-                  <img
-                    src={category.icon}
-                    alt={category.name}
-                    className="w-12 h-12 mr-4 rounded-full shadow-lg"
-                  />
-                  <div>
-                    <span className="text-gray-300 text-lg font-medium">
-                      {category.name}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-red-400 text-lg font-semibold">
-                  {category.amount.toLocaleString()} đ
-                </span>
-              </div>
-            ))}
-            <div className="flex justify-center mt-6">
-              <button
-                onClick={() => setIsHistoryModalOpen(true)} // Mở modal khi nhấn nút
-                className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300"
-              >
-                Lịch sử giao dịch
-              </button>
-            </div>
+<div className="p-2 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl w-full max-w-2xl h-auto max-h-[500px] overflow-y-auto">
+  <div className="flex justify-between mb-4"> {/* Giảm margin-bottom */}
+    <div>
+      <h3 className="text-lg font-semibold text-gray-400">Tổng cộng</h3>
+      <p className="text-red-400 text-2xl font-extrabold"> {/* Giảm kích thước chữ */}
+        {totalExpenses.toLocaleString()} đ
+      </p>
+    </div>
+    <div>
+      <h3 className="text-lg font-semibold text-gray-400">Trung bình hàng ngày</h3>
+      <p className="text-blue-400 text-2xl font-extrabold"> {/* Giảm kích thước chữ */}
+        {dailyAverage.toLocaleString()} đ
+      </p>
+    </div>
+  </div>
+  <div className="flex justify-center">
+    <ReactApexChart
+      options={chartData.options}
+      series={chartData.series}
+      type="donut"
+      width={300} 
+    />
+  </div>
+  <div className="mt-4"> {/* Giảm margin-top */}
+    {categories.slice(0, 3).map((category, index) => (
+      <div
+        key={index}
+        className="flex justify-between items-center border-b border-gray-700 pb-2 mb-2" 
+      >
+        <div className="flex items-center">
+          <img
+            src={category.icon}
+            alt={category.name}
+            className="w-10 h-10 mr-2 rounded-full shadow-lg" 
+          />
+          <div>
+            <span className="text-gray-300 text-base font-medium"> 
+              {category.name}
+            </span>
           </div>
         </div>
+        <span className="text-red-400 text-base font-semibold"> 
+          {category.amount.toLocaleString()} đ
+        </span>
+      </div>
+    ))}
+    <div className="flex justify-center mt-4"> 
+      <button
+        onClick={() => setIsHistoryModalOpen(true)} // Mở modal khi nhấn nút
+        className="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition duration-300 text-sm" 
+      >
+        Lịch sử giao dịch
+      </button>
+    </div>
+  </div>
+</div>
       )}
   
       {/* Modal Lịch sử giao dịch */}
       <HistoryTransaction
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)} // Đóng modal
-      />
-       <WalletModal
-        isOpen={isWalletModalOpen}
-        onClose={() => setIsWalletModalOpen(false)} // Đóng modal ví
-        onOpenAddWallet={() => console.log("Thêm logic mở modal thêm ví")} // Thêm logic mở modal thêm ví
       />
     </div>
   );
